@@ -1,23 +1,40 @@
 function addTask() {
   const input = document.getElementById("taskInput");
   const list = document.getElementById("taskList");
+  
   if (input.value === "") {
     alert("Please enter a task");
     return;
   }
 
-  const newItem = document.createElement("li");
-  const deleteButton= document.createElement("button");
+  const li = document.createElement("li");
+  
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  
+  const taskText = document.createElement("span");
+  taskText.textContent = input.value;
 
-  newItem.textContent = input.value + " ";
+  checkbox.onchange = function() {
+    if (checkbox.checked) {
+      taskText.style.textDecoration = "line-through";
+    } else {
+      taskText.style.textDecoration = "none";
+    }
+  };
+
+  const deleteButton= document.createElement("button");
   
   deleteButton.textContent = "Delete";
   deleteButton.onclick = function() {
-    newItem.remove();
+    li.remove();
   };
-    newItem.appendChild(deleteButton);
-    
-  list.appendChild(newItem);
+  li.appendChild(checkbox);
+  li.appendChild(taskText);
+  li.appendChild(deleteButton);
+
+  list.appendChild(li);
+  
   
   input.value = "";
 }
