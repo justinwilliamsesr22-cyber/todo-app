@@ -1,5 +1,11 @@
 const taskList = document.getElementById("taskList");
 
+function updateCounter() {
+  const count = document.querySelectorAll("#taskList li").length;
+
+  document.getElementById("taskCounter").textContent = 
+  count + " Task" + (count !== 1 ? "s" : "");
+}
 loadTasks();
 
 function addTask() {
@@ -42,13 +48,15 @@ function createTask(task) {
     deleteButton.onclick = function () {
         li.remove();
         saveTasks();
+        updateCounter();
     };
 
     li.appendChild(checkbox);
     li.appendChild(taskText);
     li.appendChild(deleteButton);
 
-    taskList.appendChild(li);
+    taskList.appendChild(li); 
+    updateCounter();
 }
 
 function saveTasks() {
@@ -97,12 +105,27 @@ function loadTasks() {
         deleteButton.onclick = function () {
             li.remove();
             saveTasks();
+            updateCounter();
         };
 
         li.appendChild(checkbox);
         li.appendChild(taskText);
         li.appendChild(deleteButton);
 
-        taskList.appendChild(li);
+        taskList.appendChild(li); 
+        updateCounter();
     });
+}
+document.getElementById("taskInput").addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+            addTask();
+        }
+    });
+
+    updateCounter();
+
+function clearTasks() {
+  taskList.innerHTML = "";
+  localStorage.removeItem("tasks");
+  updateCounter();
 }
