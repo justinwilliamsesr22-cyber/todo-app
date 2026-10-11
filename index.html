@@ -9,20 +9,27 @@
     <div class="container">
 
       <h1>My Todo List</h1>
+      
       <p id="taskCounter">0 Tasks</p>
     
-     <input type="text"
-      id="taskInput" placeholder="Enter a task">
+     <div class="controls">
+      
+      <input 
+      type="text"
+      id="taskInput" placeholder="Enter a task"
+      maxlength="100">
 
     <button 
        onclick="addTask()">Add Task</button>
   
     <button 
     onclick="clearTasks()">Clear All</button>
+    
+  </div>
 
     <ul id="taskList"></ul>
   </div>
-
+   
     <script src="script.js"></script>
   
  </body>

@@ -1,48 +1,101 @@
 body {
-  background-color: #121212;
-  color: white;
-  font-family: Arial, sans-serif;
-  padding: 40px;
+background-color: #121212;
+color: white;
+font-family: Arial, sans-serif;
+padding: 40px;
 }
+
 .container {
-  max-width: 500px;
-  margin: auto;
+max-width: 600px;
+margin: auto;
 background-color: #1e1e1e;
-  padding: 20px;
-  border-radius: 10px;
+padding: 25px;
+border-radius: 12px;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 h1 {
-  text-align: center;
+text-align: center;
+margin-bottom: 10px;
 }
 
 #taskCounter {
-  text-align: center;
-  color: #b3b3b3;
+text-align: center;
+color: #b3b3b3;
+margin-bottom: 20px;
+}
+
+.controls {
+display: flex;
+gap: 10px;
+margin-bottom: 20px;
+align-items: center;
+}
+
+.controls button {
+  white-space: nowrap;
+}
+
+.controls input {
+flex: 1;
 }
 
 input {
-  width: 65%;
-  padding: 10px;
-  border-radius: 5px;
-  border: none;
-}
-
-button:hover {
-  opacity: 0.9;
+padding: 10px;
+border: none;
+border-radius: 5px;
+font-size: 16px;
 }
 
 button {
-  padding: 10px;
-  margin-left: 5px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+padding: 10px 15px;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+font-size: 14px;
+font-weight: bold;
+}
+
+button:hover {
+opacity: 0.9;
+}
+
+.controls button:first-of-type {
+background-color: #28a745;
+color: white;
+}
+
+.controls button:last-of-type {
+background-color: #dc3545;
+color: white;
+}
+
+ul {
+list-style: none;
+padding: 0;
+margin-top: 20px;
 }
 
 li {
-  margin-top: 10px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+background-color: #2a2a2a;
+margin-top: 10px;
+padding: 12px;
+border-radius: 5px;
+display: flex;
+align-items: flex-start;
+gap: 10px;
+}
+
+li span {
+flex: 1;
+min-width: 0;
+overflow-wrap: anywhere;
+}
+
+li button {
+background-color: #dc3545;
+color: white;
+flex-shrink: 0;
+align-self: center;
+width: 90px;
 }

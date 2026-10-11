@@ -11,7 +11,12 @@ loadTasks();
 function addTask() {
     const input = document.getElementById("taskInput");
 
-    if (input.value === "") {
+    if (input.value.length > 100) {
+        alert("Task cannot exceed 100 characters");
+        return;
+    }
+
+    if (input.value.trim() === "") {
         alert("Please enter a task");
         return;
     }
@@ -125,7 +130,12 @@ document.getElementById("taskInput").addEventListener("keypress", function (even
     updateCounter();
 
 function clearTasks() {
+  if (!confirm("Are you sure you want to clear all tasks?")) {
+    return;
+  }
+
   taskList.innerHTML = "";
+
   localStorage.removeItem("tasks");
   updateCounter();
 }
