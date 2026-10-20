@@ -1,4 +1,4 @@
-# Todo-App
+# To-Do List
 
 A task management application built with HTML, CSS, and JavaScript.
 
