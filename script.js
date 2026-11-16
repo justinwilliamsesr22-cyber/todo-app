@@ -1,141 +1,171 @@
-const taskList = document.getElementById("taskList");
-
-function updateCounter() {
-  const count = document.querySelectorAll("#taskList li").length;
-
-  document.getElementById("taskCounter").textContent = 
-  count + " Task" + (count !== 1 ? "s" : "");
-}
-loadTasks();
-
-function addTask() {
-    const input = document.getElementById("taskInput");
-
-    if (input.value.length > 100) {
-        alert("Task cannot exceed 100 characters");
-        return;
-    }
-
-    if (input.value.trim() === "") {
-        alert("Please enter a task");
-        return;
-    }
-
-    createTask(input.value);
-
-    saveTasks();
-
-    input.value = "";
+function escapeHTML(str) {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
-function createTask(task) {
-    const li = document.createElement("li");
+function addApplication() {
+  const company = document.getElementById("company").value.trim();
+  const position = document.getElementById("position").value.trim();
+  const date = document.getElementById("date").value;
+  const status = document.getElementById("status").value;
 
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-
-    const taskText = document.createElement("span");
-    taskText.textContent = task;
-
-    checkbox.onchange = function () {
-        if (checkbox.checked) {
-            taskText.style.textDecoration = "line-through";
-        } else {
-            taskText.style.textDecoration = "none";
-        }
-
-        saveTasks();
-    };
-
-    const deleteButton = document.createElement("button");
-    deleteButton.textContent = "Delete";
-
-    deleteButton.onclick = function () {
-        li.remove();
-        saveTasks();
-        updateCounter();
-    };
-
-    li.appendChild(checkbox);
-    li.appendChild(taskText);
-    li.appendChild(deleteButton);
-
-    taskList.appendChild(li); 
-    updateCounter();
-}
-
-function saveTasks() {
-    const tasks = [];
-
-    document.querySelectorAll("#taskList li").forEach(item => {
-        tasks.push({
-            text: item.querySelector("span").textContent,
-            completed: item.querySelector("input").checked
-        });
-    });
-
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-}
-
-function loadTasks() {
-    const savedTasks = JSON.parse(localStorage.getItem("tasks")) || [];
-
-    savedTasks.forEach(task => {
-        const li = document.createElement("li");
-
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.checked = task.completed;
-
-        const taskText = document.createElement("span");
-        taskText.textContent = task.text;
-
-        if (task.completed) {
-            taskText.style.textDecoration = "line-through";
-        }
-
-        checkbox.onchange = function () {
-            if (checkbox.checked) {
-                taskText.style.textDecoration = "line-through";
-            } else {
-                taskText.style.textDecoration = "none";
-            }
-
-            saveTasks();
-        };
-
-        const deleteButton = document.createElement("button");
-        deleteButton.textContent = "Delete";
-
-        deleteButton.onclick = function () {
-            li.remove();
-            saveTasks();
-            updateCounter();
-        };
-
-        li.appendChild(checkbox);
-        li.appendChild(taskText);
-        li.appendChild(deleteButton);
-
-        taskList.appendChild(li); 
-        updateCounter();
-    });
-}
-document.getElementById("taskInput").addEventListener("keypress", function (event) {
-        if (event.key === "Enter") {
-            addTask();
-        }
-    });
-
-    updateCounter();
-
-function clearTasks() {
-  if (!confirm("Are you sure you want to clear all tasks?")) {
+  if (company === "" || position === "" || date === "") {
+    alert("Please fill out all fields.");
     return;
   }
 
-  taskList.innerHTML = "";
+  const table = document.getElementById("applicationTable");
+  const newRow = document.createElement("tr");
+  newRow.innerHTML = `
+    <td>${escapeHTML(company)}</td>
+    <td>${escapeHTML(position)}</td>
+    <td>${escapeHTML(date)}</td>
+    <td class="${status.toLowerCase()}">${escapeHTML(status)}</td>
+    <td>
+      <button class="edit-btn" onclick="editRow(this)">Edit</button>
+      <button class="delete-btn" onclick="deleteRow(this)">Delete</button>
+    </td>
+  `;
+  table.appendChild(newRow);
 
-  localStorage.removeItem("tasks");
+  saveApplications();
   updateCounter();
+  updateStats();
+
+  document.getElementById("company").value = "";
+  document.getElementById("position").value = "";
+  document.getElementById("date").value = "";
+  document.getElementById("status").value = "Applied";
+}
+
+function updateCounter() {
+  const total = document.getElementById("applicationTable").rows.length;
+  document.getElementById("counter").textContent = "Total Applications: " + total;
+}
+
+function deleteRow(button) {
+  button.parentElement.parentElement.remove();
+  updateCounter();
+  updateStats();
+  saveApplications();
+}
+
+function searchApplications() {
+  const search = document.getElementById("search").value.toLowerCase();
+  const rows = document.getElementById("applicationTable").getElementsByTagName("tr");
+  for (let row of rows) {
+    const company = row.cells[0].textContent.toLowerCase();
+    const position = row.cells[1].textContent.toLowerCase();
+    if (company.includes(search) || position.includes(search)) {
+      row.style.display = "";
+    } else {
+      row.style.display = "none";
+    }
+  }
+}
+
+function saveApplications() {
+  localStorage.setItem(
+    "applications",
+    document.getElementById("applicationTable").innerHTML
+  );
+}
+
+window.onload = function () {
+  const saved = localStorage.getItem("applications");
+  if (saved) {
+    document.getElementById("applicationTable").innerHTML = saved;
+    updateCounter();
+    updateStats();
+  }
+};
+
+function updateStats() {
+  const rows = document.getElementById("applicationTable").getElementsByTagName("tr");
+  let applied = 0;
+  let interviewing = 0;
+  let offer = 0;
+  let rejected = 0;
+
+  for (let row of rows) {
+    const status = row.cells[3].textContent;
+    if (status === "Applied") applied++;
+    if (status === "Interviewing") interviewing++;
+    if (status === "Offer") offer++;
+    if (status === "Rejected") rejected++;
+  }
+
+  document.getElementById("appliedCount").textContent = applied;
+  document.getElementById("interviewingCount").textContent = interviewing;
+  document.getElementById("offerCount").textContent = offer;
+  document.getElementById("rejectedCount").textContent = rejected;
+}
+
+function clearAll() {
+  if (confirm("Delete all applications?")) {
+    document.getElementById("applicationTable").innerHTML = "";
+    localStorage.removeItem("applications");
+    updateCounter();
+    updateStats();
+  }
+}
+
+function sortApplications() {
+  const sortBy = document.getElementById("sortOption").value;
+  if (!sortBy) return;
+
+  const table = document.getElementById("applicationTable");
+  const rows = Array.from(table.rows);
+  let columnIndex = 0;
+
+  if (sortBy === "company") columnIndex = 0;
+  if (sortBy === "position") columnIndex = 1;
+  if (sortBy === "date") columnIndex = 2;
+  if (sortBy === "status") columnIndex = 3;
+
+  rows.sort((a, b) => {
+    if (sortBy === "date") {
+      return new Date(a.cells[2].textContent) - new Date(b.cells[2].textContent);
+    }
+    return a.cells[columnIndex].textContent.localeCompare(
+      b.cells[columnIndex].textContent
+    );
+  });
+
+  table.innerHTML = "";
+  rows.forEach((row) => table.appendChild(row));
+  saveApplications();
+}
+
+function exportCSV() {
+  let csv = "Company,Position,Date Applied,Status\n";
+  const rows = document.getElementById("applicationTable").getElementsByTagName("tr");
+  for (let row of rows) {
+    const company = `"${row.cells[0].textContent.replace(/"/g, '""')}"`;
+    const position = `"${row.cells[1].textContent.replace(/"/g, '""')}"`;
+    const date = row.cells[2].textContent;
+    const status = row.cells[3].textContent;
+    csv += `${company},${position},${date},${status}\n`;
+  }
+  const blob = new Blob([csv], { type: "text/csv" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "job-applications.csv";
+  link.click();
+}
+
+function editRow(button) {
+  const row = button.parentElement.parentElement;
+  document.getElementById("company").value = row.cells[0].textContent;
+  document.getElementById("position").value = row.cells[1].textContent;
+  document.getElementById("date").value = row.cells[2].textContent;
+  document.getElementById("status").value = row.cells[3].textContent;
+
+  row.remove();
+  updateCounter();
+  updateStats();
+  saveApplications();
 }
